@@ -23,7 +23,6 @@
  */
 
 #include "main.hh"
-#include "wrappers/threads_wrapper.h"
 
 #if defined(IS_MSVC)
 #include <windows.h>
