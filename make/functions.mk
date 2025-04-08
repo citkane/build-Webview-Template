@@ -51,7 +51,7 @@ $(subst $(space),_,$(call TO_LOWER,${1}))
 endef
 
 define rm_dir
-	$(eval DIR := $(strip ${1}))
+    $(eval DIR := $(strip ${1}))
     $(call RM_DIR,${DIR})
 endef
 
