@@ -28,7 +28,7 @@ cd your/webview
 ```
 ```bash
 git clone https://github.com/citkane/build-Weview-Template.git
-cd Weview-Build-Template
+cd build-Weview-Template
 
 make
 make run
