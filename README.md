@@ -25,7 +25,9 @@ Fork this repo and modify `main.cc` or edit the `makefile` user options to your 
 **Usage:**
 ```bash
 cd your/webview
-git pull https://github.com/citkane/Weview-Build-Template.git
+```
+```bash
+git clone https://github.com/citkane/Weview-Build-Template.git
 cd Weview-Build-Template
 
 make
