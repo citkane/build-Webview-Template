@@ -1,4 +1,4 @@
-# Weview-Build-Template
+# build-Weview-Template
 This template provides for test building a Webview user application locally on each OS:<br>
 Windows, Linux or MacOS.
 
@@ -27,7 +27,7 @@ Fork this repo and modify `main.cc` or edit the `makefile` user options to your 
 cd your/webview
 ```
 ```bash
-git clone https://github.com/citkane/Weview-Build-Template.git
+git clone https://github.com/citkane/build-Weview-Template.git
 cd Weview-Build-Template
 
 make
