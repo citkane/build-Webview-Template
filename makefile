@@ -27,12 +27,6 @@
 # Windows, Linux or MacOS.
 #
 # It does not provide for cross-compilation usage.
-# 
-# Compilers accomodated:
-# - MSVC (Windows)
-# - MINGW (Windows)
-# - LLVM (Linux)
-# - AppleClang (Mac)
 #
 ######################################################################################
 # User config:
