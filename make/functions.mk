@@ -32,6 +32,7 @@ ifeq ($(OS),Windows_NT)
 	ifeq (${SHELL_TEST},"test")
 		RM_DIR = if exist "$(1)" rd /s /q "$(1)"
 		MESSAGE_GREEN = echo. && powershell -Command "Write-Host '$(strip ${1})' -ForegroundColor Green"
+		MESSAGE_GREEN = echo. && powershell -Command "Write-Host '$(strip ${1})' -ForegroundColor Green"
 		MESSAGE = powershell -Command "Write-Host '$(strip ${1})'"
 	else
 		RM_DIR = rm -rf $(1)
