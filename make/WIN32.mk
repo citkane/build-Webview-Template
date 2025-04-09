@@ -23,56 +23,56 @@
 #
 
 run:
-	@$(call run_message, Windows MINGW ${COMPILED_M})
+	@$(call run_message, ${PLATFORM_M} ${COMPILED_M})
 	./${BUILD_DIR_COMPILED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-	@$(call run_message, Windows MINGW ${STATIC_M})
+	@$(call run_message, ${PLATFORM_M} ${STATIC_M})
 	./${BUILD_DIR_STATIC}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-	@$(call run_message, Windows MINGW ${SHARED_M})
+	@$(call run_message, ${PLATFORM_M} ${SHARED_M})
 	./${BUILD_DIR_SHARED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-	@$(call run_message, Windows MINGW ${TARGETED_M})
+	@$(call run_message, ${PLATFORM_M} ${TARGETED_M})
 	./${BUILD_DIR_TARGETED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-	$(call run_message, Windows MINGW ${TARGETED_STATIC_M})
+	$(call run_message, ${PLATFORM_M} ${TARGETED_STATIC_M})
 	./${BUILD_DIR_TARGETED_STATIC}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-	$(call run_message, Windows MINGW ${TARGETED_SHARED_M})
+	$(call run_message, ${PLATFORM_M} ${TARGETED_SHARED_M})
 	./${BUILD_DIR_TARGETED_SHARED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-	@$(call run_message, Windows MSVC ${COMPILED_M})
+	@$(call run_message, ${PLATFORM_MSVC_M} ${COMPILED_M})
 	./${MSVC_BUILD_DIR_COMPILED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-	@$(call run_message, Windows MSVC ${STATIC_M})
+	@$(call run_message, ${PLATFORM_MSVC_M} ${STATIC_M})
 	./${MSVC_BUILD_DIR_STATIC}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-	@$(call run_message, Windows MSVC ${SHARED_M})
+	@$(call run_message, ${PLATFORM_MSVC_M} ${SHARED_M})
 	./${MSVC_BUILD_DIR_SHARED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-	@$(call run_message, Windows MSVC ${TARGETED_M})
+	@$(call run_message, ${PLATFORM_MSVC_M} ${TARGETED_M})
 	./${MSVC_BUILD_DIR_TARGETED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-	@$(call run_message, Windows MSVC ${TARGETED_STATIC_M})
+	@$(call run_message, ${PLATFORM_MSVC_M} ${TARGETED_STATIC_M})
 	./${MSVC_BUILD_DIR_TARGETED_STATIC}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-	@$(call run_message, Windows MSVC ${TARGETED_SHARED_M})
+	@$(call run_message, ${PLATFORM_MSVC_M} ${TARGETED_SHARED_M})
 	./${MSVC_BUILD_DIR_TARGETED_SHARED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
 build:
-	@$(eval USER_MESSAGE := Windows MINGW ${COMPILED_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_M} ${COMPILED_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_COMPILED} -S . ${DEFS} \
 	-D CMAKE_TOOLCHAIN_FILE=${MINGW_TOOLCHAIN_FILE_REMOTE} \
@@ -83,7 +83,7 @@ build:
 	@$(call build_message, ${COMPILED_M})
 	cmake --build ${BUILD_DIR_COMPILED} --config ${BUILD_TYPE}
 build_static:
-	@$(eval USER_MESSAGE := Windows MINGW ${STATIC_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_M} ${STATIC_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_STATIC} -S . ${DEFS} \
 	-D CMAKE_TOOLCHAIN_FILE=${MINGW_TOOLCHAIN_FILE_REMOTE} \
@@ -94,7 +94,7 @@ build_static:
 	@$(call build_message, ${STATIC_M})
 	cmake --build ${BUILD_DIR_STATIC} --config ${BUILD_TYPE}
 build_shared:
-	@$(eval USER_MESSAGE := Windows MINGW ${SHARED_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_M} ${SHARED_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_SHARED} -S . ${DEFS} \
 	-D CMAKE_TOOLCHAIN_FILE=${MINGW_TOOLCHAIN_FILE_REMOTE} \
@@ -105,7 +105,7 @@ build_shared:
 	@$(call build_message, ${SHARED_M})	
 	cmake --build ${BUILD_DIR_SHARED} --config ${BUILD_TYPE}
 build_targeted:
-	@$(eval USER_MESSAGE := Windows MINGW ${TARGETED_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_M} ${TARGETED_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_TARGETED} -S . ${DEFS} \
 	-D CMAKE_TOOLCHAIN_FILE=${MINGW_TOOLCHAIN_FILE_REMOTE} \
@@ -116,7 +116,7 @@ build_targeted:
 	@$(call build_message, ${TARGETED_M})	
 	cmake --build ${BUILD_DIR_TARGETED} --config ${BUILD_TYPE}
 build_targeted_static:
-	@$(eval USER_MESSAGE := Windows MINGW ${TARGETED_STATIC_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_M} ${TARGETED_STATIC_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_TARGETED_STATIC} -S . ${DEFS} \
 	-D CMAKE_TOOLCHAIN_FILE=${MINGW_TOOLCHAIN_FILE_REMOTE} \
@@ -128,7 +128,7 @@ build_targeted_static:
 	@$(call build_message, ${TARGETED_STATIC_M})	
 	cmake --build ${BUILD_DIR_TARGETED_STATIC} --config ${BUILD_TYPE}
 build_targeted_shared:
-	@$(eval USER_MESSAGE := Windows MINGW ${TARGETED_SHARED_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_M} ${TARGETED_SHARED_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_TARGETED_SHARED} -S . ${DEFS} \
 	-D CMAKE_TOOLCHAIN_FILE=${MINGW_TOOLCHAIN_FILE_REMOTE} \
@@ -141,7 +141,7 @@ build_targeted_shared:
 	cmake --build ${BUILD_DIR_TARGETED_SHARED} --config ${BUILD_TYPE}
 
 msvc_build:
-	@$(eval USER_MESSAGE := Windows MSVC ${COMPILED_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_MSVC_M} ${COMPILED_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${MSVC_V} -A ${MSVC_A} -B ${MSVC_BUILD_DIR_COMPILED} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_FILE} \
@@ -152,7 +152,7 @@ msvc_build:
 	@$(call build_message, ${COMPILED_M})	
 	cmake --build ${MSVC_BUILD_DIR_COMPILED} --config ${BUILD_TYPE}
 msvc_build_static:
-	@$(eval USER_MESSAGE := Windows MSVC ${STATIC_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_MSVC_M} ${STATIC_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${MSVC_V} -A ${MSVC_A} -B ${MSVC_BUILD_DIR_STATIC} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_FILE} \
@@ -163,7 +163,7 @@ msvc_build_static:
 	@$(call build_message, ${STATIC_M})	
 	cmake --build ${MSVC_BUILD_DIR_STATIC} --config ${BUILD_TYPE}
 msvc_build_shared:
-	@$(eval USER_MESSAGE := Windows MSVC ${SHARED_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_MSVC_M} ${SHARED_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${MSVC_V} -A ${MSVC_A} -B ${MSVC_BUILD_DIR_SHARED} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_FILE} \
@@ -174,7 +174,7 @@ msvc_build_shared:
 	@$(call build_message, ${SHARED_M})	
 	cmake --build ${MSVC_BUILD_DIR_SHARED} --config ${BUILD_TYPE}
 msvc_build_targeted:
-	@$(eval USER_MESSAGE := Windows MSVC ${TARGETED_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_MSVC_M} ${TARGETED_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${MSVC_V} -A ${MSVC_A} -B ${MSVC_BUILD_DIR_TARGETED} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_FILE} \
@@ -185,7 +185,7 @@ msvc_build_targeted:
 	@$(call build_message, ${TARGETED_M})	
 	cmake --build ${MSVC_BUILD_DIR_TARGETED} --config ${BUILD_TYPE}
 msvc_build_targeted_static:
-	@$(eval USER_MESSAGE := Windows MSVC ${TARGETED_STATIC_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_MSVC_M} ${TARGETED_STATIC_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${MSVC_V} -A ${MSVC_A} -B ${MSVC_BUILD_DIR_TARGETED_STATIC} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_C_FILE} \
@@ -197,7 +197,7 @@ msvc_build_targeted_static:
 	@$(call build_message, ${TARGETED_STATIC_M})	
 	cmake --build ${MSVC_BUILD_DIR_TARGETED_STATIC} --config ${BUILD_TYPE}
 msvc_build_targeted_shared:
-	@$(eval USER_MESSAGE := Windows MSVC ${TARGETED_SHARED_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_MSVC_M} ${TARGETED_SHARED_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${MSVC_V} -A ${MSVC_A} -B ${MSVC_BUILD_DIR_TARGETED_SHARED} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_C_FILE} \
@@ -210,7 +210,7 @@ msvc_build_targeted_shared:
 	cmake --build ${MSVC_BUILD_DIR_TARGETED_SHARED} --config ${BUILD_TYPE}
 
 wv_build:
-	@$(call make_wv_message, Windows MINGW)
+	@$(call make_wv_message, ${PLATFORM_M})
 	cmake -G  ${NINJA_CONFIG} -B ${WV_BUILD_DIR} -S .. ${WV_COMMON_DEFS} \
 	-D CMAKE_TOOLCHAIN_FILE=${MINGW_TOOLCHAIN_FILE} \
 	-D WEBVIEW_USE_COMPAT_MINGW=TRUE \
@@ -218,7 +218,7 @@ wv_build:
 	@$(call build_wv_message)
 	cmake --build ${WV_BUILD_DIR} --config ${BUILD_TYPE}
 wv_msvc_build:
-	@$(call make_wv_message, Windows MSVC)
+	@$(call make_wv_message, ${PLATFORM_MSVC_M})
 	cmake -G ${MSVC_V} -B ${MSVC_WV_BUILD_DIR} -S .. ${WV_COMMON_DEFS} \
 	-D CMAKE_TOOLCHAIN_FILE=cmake/toolchains/${PLATFORM}-windows-msvc.cmake \
 	-W no-dev

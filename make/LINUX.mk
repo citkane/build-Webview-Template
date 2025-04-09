@@ -23,32 +23,32 @@
 #
 
 run:
-	@$(call run_message, Linux LLVM ${COMPILED_M})
+	@$(call run_message, ${PLATFORM_M} ${COMPILED_M})
 	./${BUILD_DIR_COMPILED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-	@$(call run_message, Linux LLVM ${STATIC_M})
+	@$(call run_message, ${PLATFORM_M} ${STATIC_M})
 	./${BUILD_DIR_STATIC}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-	@$(call run_message, Linux LLVM ${SHARED_M})		
+	@$(call run_message, ${PLATFORM_M} ${SHARED_M})		
 	./${BUILD_DIR_SHARED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-	@$(call run_message, Linux LLVM ${TARGETED_M})	
+	@$(call run_message, ${PLATFORM_M} ${TARGETED_M})	
 	./${BUILD_DIR_TARGETED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-	@$(call run_message, Linux LLVM ${TARGETED_STATIC_M})	
+	@$(call run_message, ${PLATFORM_M} ${TARGETED_STATIC_M})	
 	./${BUILD_DIR_TARGETED_STATIC}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-	@$(call run_message, Linux LLVM ${TARGETED_SHARED_M})	
+	@$(call run_message, ${PLATFORM_M} ${TARGETED_SHARED_M})	
 	./${BUILD_DIR_TARGETED_SHARED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
 build:
-	@$(eval USER_MESSAGE := Linux LLVM ${COMPILED_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_M} ${COMPILED_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_COMPILED} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_FILE} \
@@ -57,7 +57,7 @@ build:
 	@$(call build_message, ${COMPILED_M})
 	cmake --build ${BUILD_DIR_COMPILED} --config ${BUILD_TYPE}
 build_static:
-	@$(eval USER_MESSAGE := Linux LLVM ${STATIC_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_M} ${STATIC_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_STATIC} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_FILE} \
@@ -66,7 +66,7 @@ build_static:
 	@$(call build_message, ${STATIC_M})	
 	cmake --build ${BUILD_DIR_STATIC} --config ${BUILD_TYPE}
 build_shared:
-	@$(eval USER_MESSAGE := Linux LLVM ${SHARED_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_M} ${SHARED_M})
 	@$(call make_message, ${USER_MESSAGE})	
 	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_SHARED} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_FILE} \
@@ -75,7 +75,7 @@ build_shared:
 	@$(call build_message, ${SHARED_M})	
 	cmake --build ${BUILD_DIR_SHARED} --config ${BUILD_TYPE}
 build_targeted:
-	@$(eval USER_MESSAGE := Linux LLVM ${TARGETED_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_M} ${TARGETED_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_TARGETED} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_FILE} \
@@ -84,7 +84,7 @@ build_targeted:
 	@$(call build_message, ${TARGETED_M})	
 	cmake --build ${BUILD_DIR_TARGETED} --config ${BUILD_TYPE}
 build_targeted_static:
-	@$(eval USER_MESSAGE := Linux LLVM ${TARGETED_STATIC_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_M} ${TARGETED_STATIC_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_TARGETED_STATIC} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_C_FILE} \
@@ -94,7 +94,7 @@ build_targeted_static:
 	@$(call build_message, ${TARGETED_STATIC_M})	
 	cmake --build ${BUILD_DIR_TARGETED_STATIC} --config ${BUILD_TYPE}
 build_targeted_shared:
-	@$(eval USER_MESSAGE := Linux LLVM ${TARGETED_SHARED_M})
+	@$(eval USER_MESSAGE := ${PLATFORM_M} ${TARGETED_SHARED_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_TARGETED_SHARED} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_C_FILE} \
@@ -106,7 +106,7 @@ build_targeted_shared:
 
 
 wv_build:
-	@$(call make_wv_message, Linux LLVM)
+	@$(call make_wv_message, ${PLATFORM_M})
 	cmake -G ${NINJA_CONFIG} -B ${WV_BUILD_DIR} -S .. ${WV_COMMON_DEFS} \
 	-D CMAKE_TOOLCHAIN_FILE=cmake/toolchains/host-llvm.cmake \
 	-D WEBVIEW_TOOLCHAIN_EXECUTABLE_SUFFIX=${LLVM_V} \
