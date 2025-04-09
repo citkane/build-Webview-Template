@@ -25,7 +25,7 @@
 #ifndef APP_THREADS_WRAPPER_H
 #define APP_THREADS_WRAPPER_H
 
-#if defined(__cplusplus)
+#if defined(__cplusplus) // C++ with PThreads
 #define IS_CC
 
 #include <atomic>
@@ -45,12 +45,12 @@ typedef std::function<bool()> atomic_acquire_t;
 #elif defined(IS_MSVC) // C MSVC build with WINThreads
 
 #define IS_C
-#define IS_C_MSTHRD
+#define IS_C_WINTHRD
 
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <threads.h> // Note that <threads.h> on MSVC needs Visual Studio 2022 version 17.8 or greater
+#include <threads.h> // Note: <threads.h> on MSVC needs Visual Studio 2022 version 17.8 or greater
 
 typedef mtx_t mutex;
 typedef cnd_t condition_variable;
@@ -121,7 +121,7 @@ static void atomic_release(atomic_bool atomic_flag) {
 static unique_lock lock_mtx(mutex *mtx) {
 #ifdef IS_CC
   return unique_lock((*mtx));
-#elif defined(IS_C_MSTHRD)
+#elif defined(IS_C_WINTHRD)
   (void)mtx_init(mtx, mtx_plain);
   (void)mtx_lock(mtx);
   return (*mtx);
@@ -136,7 +136,7 @@ void condition_wait(condition_variable *cv, unique_lock *lock,
                     atomic_bool *atomic_flag) {
 #ifdef IS_CC
   cv->wait(((*lock)), atomic_acquire((*atomic_flag)));
-#elif defined(IS_C_MSTHRD)
+#elif defined(IS_C_WINTHRD)
   while (!atomic_acquire(atomic_flag)) {
     (void)cnd_wait(cv, lock);
   }
@@ -152,7 +152,7 @@ void condition_wait(condition_variable *cv, unique_lock *lock,
 void condition_notify_one(condition_variable *cv) {
 #ifdef IS_CC
   cv->notify_one();
-#elif defined(IS_C_MSTHRD)
+#elif defined(IS_C_WINTHRD)
   (void)cnd_signal(cv);
 #else
   pthread_cond_signal(cv);
@@ -164,7 +164,7 @@ void condition_notify_one(condition_variable *cv) {
 void sleep_for(int seconds) {
 #ifdef IS_CC
   std::this_thread::sleep_for(std::chrono::seconds(seconds));
-#elif defined(IS_C_MSTHRD)
+#elif defined(IS_C_WINTHRD)
   struct timespec duration = {.tv_sec = seconds, .tv_nsec = 0};
   (void)thrd_sleep(&duration, NULL);
 #else
@@ -178,7 +178,7 @@ std_thread create_thread(make_worker_thread_t fn, threads_ctx_t *ctx) {
 #ifdef IS_CC
   std_thread worker_thread(fn, ctx);
   return worker_thread;
-#elif defined(IS_C_MSTHRD)
+#elif defined(IS_C_WINTHRD)
   std_thread worker_thread;
   (void)thrd_create(&worker_thread, fn, ctx);
   return worker_thread;
@@ -193,7 +193,7 @@ std_thread create_thread(make_worker_thread_t fn, threads_ctx_t *ctx) {
 void join_thread(std_thread *thread) {
 #ifdef IS_CC
   thread->join();
-#elif defined(IS_C_MSTHRD)
+#elif defined(IS_C_WINTHRD)
   int result;
   (void)thrd_join((*thread), &result);
 #else
@@ -209,7 +209,7 @@ void join_thread(std_thread *thread) {
 void destroy_mtx_lock(unique_lock *lock) {
 #ifdef IS_CC
   return;
-#elif defined(IS_C_MSTHRD)
+#elif defined(IS_C_WINTHRD)
   int stat = mtx_unlock(lock);
   mtx_destroy(lock);
 #else
@@ -222,7 +222,7 @@ void destroy_mtx_lock(unique_lock *lock) {
 /// Destroys C memory resource.
 /// NOOP for C++
 void destroy_cv(condition_variable *cv) {
-#ifdef IS_C_MSTHRD
+#ifdef IS_C_WINTHRD
   cnd_destroy(cv);
 #elif defined(IS_C_PTHRD)
   pthread_cond_destroy(cv);
@@ -232,7 +232,7 @@ void destroy_cv(condition_variable *cv) {
 /// Initialises C memory resource.
 /// NOOP for C++
 void init_ctx(threads_ctx_t *ctx) {
-#ifdef IS_C_MSTHRD
+#ifdef IS_C_WINTHRD
   (void)cnd_init(&ctx->cv);
   atomic_init(&ctx->worker_ready, 0);
   atomic_init(&ctx->wv_done, 0);
