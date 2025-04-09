@@ -15,11 +15,10 @@ It's primary purpose is to check Webview's behaviour across a gamit of compiling
 **Build platforms used:**
 - MSVC >= 2022 version 17.8 (Windows)
 - MINGW [*POSIX*] (Windows)
-- LLVM (Linux)
-- AppleClang (Mac)
+- LLVM (Linux and MacOS)
 
 **Threading Models:**
-- POSIX
+- POSIX (mostly)
 - WIN (only for MSVC C)
 
 **Usage:**
