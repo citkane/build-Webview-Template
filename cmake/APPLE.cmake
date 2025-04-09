@@ -42,7 +42,7 @@ elseif(SHARED)
     target_link_libraries(${PROJECT_NAME} PRIVATE webview_linked)
 
 elseif(STATIC)
-    LINK_WEBVIEW_LIB(libwebviewd.a "" "${inlcude_libs}" "")
+    LINK_WEBVIEW_LIB(libwebviewd.a "" "${inlcude_libs}" libwebviewd.dylib)
     target_include_directories(${PROJECT_NAME} PRIVATE ${include_dirs})
     target_link_libraries(${PROJECT_NAME} PRIVATE webview_linked)
 

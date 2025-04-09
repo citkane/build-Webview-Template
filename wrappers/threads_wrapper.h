@@ -182,6 +182,7 @@ std_thread create_thread(make_worker_thread_t fn, threads_ctx_t *ctx) {
 #else
   std_thread worker_thread;
   pthread_create(&worker_thread, NULL, (void *)fn, ctx);
+  return worker_thread;
 #endif
 }
 

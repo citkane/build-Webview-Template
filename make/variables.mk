@@ -69,6 +69,8 @@ ifeq ($(OS),Windows_NT)
 
 	MINGW_TOOLCHAIN_FILE := cmake/toolchains/${PLATFORM}-w64-mingw32.cmake
 	MINGW_TOOLCHAIN_FILE_REMOTE := ${WV_ROOT_DIR}/${MINGW_TOOLCHAIN_FILE}
+	PLATFORM_M := Windows MINGW
+	PLATFORM_MSVC_M := Windows MSVC
 	DEFS := ${COMMON_DEFS}
 
 else ifeq ($(UNAME),Linux)
@@ -80,10 +82,11 @@ else ifeq ($(UNAME),Linux)
 	BUILD_DIR_TARGETED_STATIC := build-linux-targeted-static
 	BUILD_DIR_TARGETED_SHARED := build-linux-targeted-shared
 
+	PLATFORM_M := Linux LLVM
 	DEFS := ${COMMON_DEFS} -DWEBKITGTK_V=${WEBKITGTK_V} -DWV_BUILD_DIR=${WV_BUILD_DIR}
 
 else ifeq ($(UNAME),Darwin)
-	WV_BUILD_DIR := ${WV_ROOT_DIR}/build-mac-appleclang
+	WV_BUILD_DIR := ${WV_ROOT_DIR}/build-mac-llvm
 	BUILD_DIR_COMPILED := build-mac-compiled
 	BUILD_DIR_STATIC := build-mac-static
 	BUILD_DIR_SHARED := build-mac-shared
@@ -91,6 +94,9 @@ else ifeq ($(UNAME),Darwin)
 	BUILD_DIR_TARGETED_STATIC := build-mac-targeted-static
 	BUILD_DIR_TARGETED_SHARED := build-mac-targeted-shared
 
+	HOST_TOOLCHAIN_FILE := cmake/toolchains/host-llvm.cmake
+	HOST_TOOLCHAIN_FILE_REMOTE := ${WV_ROOT_DIR}/${HOST_TOOLCHAIN_FILE}
+	PLATFORM_M := MacOS LLVM
 	DEFS := ${COMMON_DEFS} -DWV_BUILD_DIR=${WV_BUILD_DIR}
 
 endif
