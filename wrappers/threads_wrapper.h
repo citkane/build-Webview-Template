@@ -143,7 +143,6 @@ void condition_wait(condition_variable *cv, unique_lock *lock,
 #else
   while (!atomic_acquire(atomic_flag)) {
     pthread_cond_wait(cv, lock);
-    //    SleepConditionVariableCS(cv, lock, INFINITE);
   }
 #endif
 }
@@ -156,7 +155,6 @@ void condition_notify_one(condition_variable *cv) {
   (void)cnd_signal(cv);
 #else
   pthread_cond_signal(cv);
-  //WakeConditionVariable(cv);
 #endif
 }
 
@@ -169,7 +167,6 @@ void sleep_for(int seconds) {
   (void)thrd_sleep(&duration, NULL);
 #else
   sleep(seconds);
-  //Sleep(seconds * 1000);
 #endif
 }
 
@@ -185,7 +182,6 @@ std_thread create_thread(make_worker_thread_t fn, threads_ctx_t *ctx) {
 #else
   std_thread worker_thread;
   pthread_create(&worker_thread, NULL, (void *)fn, ctx);
-  //return CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)fn, ctx, 0, NULL);
 #endif
 }
 
@@ -199,8 +195,6 @@ void join_thread(std_thread *thread) {
 #else
   void **result;
   pthread_join((*thread), result);
-  //WaitForSingleObject((*thread), INFINITE);
-  //CloseHandle((*thread));
 #endif
 }
 
@@ -215,7 +209,6 @@ void destroy_mtx_lock(unique_lock *lock) {
 #else
   pthread_mutex_unlock(lock);
   pthread_mutex_destroy(lock);
-//  LeaveCriticalSection(lock);
 #endif
 };
 
@@ -238,7 +231,6 @@ void init_ctx(threads_ctx_t *ctx) {
   atomic_init(&ctx->wv_done, 0);
 #elif defined(IS_C_PTHRD)
   pthread_cond_init(&ctx->cv, NULL);
-  //InitializeConditionVariable(&ctx->cv);
   atomic_init(&ctx->wv_done, false);
   atomic_init(&ctx->worker_ready, false);
 #endif
