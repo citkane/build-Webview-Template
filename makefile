@@ -67,8 +67,8 @@ wv_msvc_build mscv_build msvc_build_static msvc_build_shared msvc_build_targeted
 
 ifeq ($(OS),Windows_NT)
 all: wv_build wv_msvc_build \
-build build_static build_shared build_targeted \
-msvc_build msvc_build_static msvc_build_shared msvc_build_targeted
+build build_static build_shared build_targeted build_targeted_static build_targeted_shared \
+msvc_build msvc_build_static msvc_build_shared msvc_build_targeted msvc_build_targeted_static msvc_build_targeted_shared
 
 else
 all: wv_build \

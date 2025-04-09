@@ -23,15 +23,17 @@
 #
 
 SYSTEM_PROJECT_NAME := $(call to_lower_snake, "${USER_PROJECT_NAME}")
-WV_ROOT_DIR = ${ROOT_DIR}${WEBVIEW_REL_ROOT}
+WV_ROOT_DIR := ${ROOT_DIR}${WEBVIEW_REL_ROOT}
+NINJA_CONFIG := "Ninja Multi-Config"
+EXE_PATH := bin/${BUILD_TYPE}/${SYSTEM_PROJECT_NAME}
 
 
 COMPILED_M := with C++ COMPILED Webview
 STATIC_M := with C++ STATIC linked lib
 SHARED_M := with C++ SHARED linked lib
-TARGETED_M := with C++ TARGETED linked webview::core
-TARGETED_STATIC_M := with C TARGETED linked webview::core_static
-TARGETED_SHARED_M := with C TARGETED linked webview::core_shared
+TARGETED_M := with C++ TARGETED link webview::core
+TARGETED_STATIC_M := with C TARGETED link webview::core_static
+TARGETED_SHARED_M := with C TARGETED link webview::core_shared
 SUCCESS_M := Success!
 
 COMMON_DEFS := -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
@@ -54,13 +56,19 @@ ifeq ($(OS),Windows_NT)
 	BUILD_DIR_STATIC := build-win-static
 	BUILD_DIR_SHARED := build-win-shared
 	BUILD_DIR_TARGETED := build-win-targeted
+	BUILD_DIR_TARGETED_STATIC := build-win-targeted-static
+	BUILD_DIR_TARGETED_SHARED := build-win-targeted-shared
 
 	MSVC_WV_BUILD_DIR := ${WV_ROOT_DIR}/build-win-msvc
 	MSVC_BUILD_DIR_COMPILED := build-msvc-compiled
 	MSVC_BUILD_DIR_STATIC := build-msvc-static
 	MSVC_BUILD_DIR_SHARED := build-msvc-shared
 	MSVC_BUILD_DIR_TARGETED := build-msvc-targeted
+	MSVC_BUILD_DIR_TARGETED_STATIC := build-msvc-targeted-static
+	MSVC_BUILD_DIR_TARGETED_SHARED := build-msvc-targeted-shared
 
+	MINGW_TOOLCHAIN_FILE := cmake/toolchains/${PLATFORM}-w64-mingw32.cmake
+	MINGW_TOOLCHAIN_FILE_REMOTE := ${WV_ROOT_DIR}/${MINGW_TOOLCHAIN_FILE}
 	DEFS := ${COMMON_DEFS}
 
 else ifeq ($(UNAME),Linux)
@@ -80,6 +88,8 @@ else ifeq ($(UNAME),Darwin)
 	BUILD_DIR_STATIC := build-mac-static
 	BUILD_DIR_SHARED := build-mac-shared
 	BUILD_DIR_TARGETED := build-mac-targeted
+	BUILD_DIR_TARGETED_STATIC := build-mac-targeted-static
+	BUILD_DIR_TARGETED_SHARED := build-mac-targeted-shared
 
 	DEFS := ${COMMON_DEFS} -DWV_BUILD_DIR=${WV_BUILD_DIR}
 

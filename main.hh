@@ -71,7 +71,7 @@ static char *null_char = nullptr;
 
 char *null_char = NULL;
 
-#endif // defined(IS_C)
+#endif
 
 static char *char_alloc(size_t buffer_size) {
 #ifdef IS_CC

@@ -22,10 +22,6 @@
 # SOFTWARE.
 #
 
-if(WIN32)
-    cmake_policy(SET CMP0065 NEW)
-endif()
-
 string(ASCII 27 ESCAPE)
 set(YELLOW  "${ESCAPE}[33m")
 set(GREEN  "${ESCAPE}[32m")

@@ -42,8 +42,10 @@ typedef std::thread std_thread;
 typedef std::function<int(void *)> make_worker_thread_t;
 typedef std::function<bool()> atomic_acquire_t;
 
-#else
+#elif defined(IS_MSVC) // C MSVC build with WINThreads
+
 #define IS_C
+#define IS_C_MSTHRD
 
 #include <stdatomic.h>
 #include <stdbool.h>
@@ -57,7 +59,29 @@ typedef mtx_t unique_lock;
 typedef int (*make_worker_thread_t)(void *);
 typedef bool atomic_acquire_t;
 
-#endif // !defined(__cplusplus)
+#else // C build with PThreads
+
+#define IS_C
+#define IS_C_PTHRD
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#endif
+#include <pthread.h>
+#include <stdatomic.h>
+#include <stdbool.h>
+#include <unistd.h>
+
+typedef pthread_mutex_t mutex;
+typedef pthread_cond_t condition_variable;
+typedef pthread_t std_thread;
+typedef pthread_mutex_t unique_lock;
+typedef int (*make_worker_thread_t)(void *);
+typedef bool atomic_acquire_t;
+
+#endif
 
 /// A context type for the child worker thread
 typedef struct {
@@ -73,7 +97,7 @@ static atomic_acquire_t atomic_acquire(atomic_bool &atomic_flag) {
   return [&]() { return atomic_flag.load(std::memory_order_acquire); };
 }
 #endif
-#ifdef IS_C
+#if defined(IS_C)
 /// C helper callback function to aquire a atomic boolean flag
 static atomic_acquire_t atomic_acquire(atomic_bool atomic_flag) {
   return atomic_load_explicit(&atomic_flag, memory_order_acquire);
@@ -86,9 +110,9 @@ static void atomic_release(atomic_bool &atomic_flag) {
   atomic_flag.store(true, std::memory_order_release);
 }
 #endif
-#ifdef IS_C
+#if defined(IS_C)
 /// C wrapper to release an atomic hold
-void atomic_release(atomic_bool atomic_flag) {
+static void atomic_release(atomic_bool atomic_flag) {
   atomic_store_explicit(&atomic_flag, true, memory_order_release);
 }
 #endif
@@ -97,9 +121,12 @@ void atomic_release(atomic_bool atomic_flag) {
 static unique_lock lock_mtx(mutex *mtx) {
 #ifdef IS_CC
   return unique_lock((*mtx));
-#else
+#elif defined(IS_C_MSTHRD)
   (void)mtx_init(mtx, mtx_plain);
   (void)mtx_lock(mtx);
+  return (*mtx);
+#else
+  pthread_mutex_init(mtx, NULL);
   return (*mtx);
 #endif
 }
@@ -109,9 +136,14 @@ void condition_wait(condition_variable *cv, unique_lock *lock,
                     atomic_bool *atomic_flag) {
 #ifdef IS_CC
   cv->wait(((*lock)), atomic_acquire((*atomic_flag)));
-#else
+#elif defined(IS_C_MSTHRD)
   while (!atomic_acquire(atomic_flag)) {
     (void)cnd_wait(cv, lock);
+  }
+#else
+  while (!atomic_acquire(atomic_flag)) {
+    pthread_cond_wait(cv, lock);
+    //    SleepConditionVariableCS(cv, lock, INFINITE);
   }
 #endif
 }
@@ -120,8 +152,11 @@ void condition_wait(condition_variable *cv, unique_lock *lock,
 void condition_notify_one(condition_variable *cv) {
 #ifdef IS_CC
   cv->notify_one();
-#else
+#elif defined(IS_C_MSTHRD)
   (void)cnd_signal(cv);
+#else
+  pthread_cond_signal(cv);
+  //WakeConditionVariable(cv);
 #endif
 }
 
@@ -129,9 +164,12 @@ void condition_notify_one(condition_variable *cv) {
 void sleep_for(int seconds) {
 #ifdef IS_CC
   std::this_thread::sleep_for(std::chrono::seconds(seconds));
-#else
+#elif defined(IS_C_MSTHRD)
   struct timespec duration = {.tv_sec = seconds, .tv_nsec = 0};
   (void)thrd_sleep(&duration, NULL);
+#else
+  sleep(seconds);
+  //Sleep(seconds * 1000);
 #endif
 }
 
@@ -140,10 +178,14 @@ std_thread create_thread(make_worker_thread_t fn, threads_ctx_t *ctx) {
 #ifdef IS_CC
   std_thread worker_thread(fn, ctx);
   return worker_thread;
+#elif defined(IS_C_MSTHRD)
+  std_thread worker_thread;
+  (void)thrd_create(&worker_thread, fn, ctx);
+  return worker_thread;
 #else
-  std_thread *worker_thread;
-  (void)thrd_create(worker_thread, fn, ctx);
-  return (*worker_thread);
+  std_thread worker_thread;
+  pthread_create(&worker_thread, NULL, (void *)fn, ctx);
+  //return CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)fn, ctx, 0, NULL);
 #endif
 }
 
@@ -151,9 +193,14 @@ std_thread create_thread(make_worker_thread_t fn, threads_ctx_t *ctx) {
 void join_thread(std_thread *thread) {
 #ifdef IS_CC
   thread->join();
-#else
+#elif defined(IS_C_MSTHRD)
   int result;
   (void)thrd_join((*thread), &result);
+#else
+  void **result;
+  pthread_join((*thread), result);
+  //WaitForSingleObject((*thread), INFINITE);
+  //CloseHandle((*thread));
 #endif
 }
 
@@ -162,31 +209,38 @@ void join_thread(std_thread *thread) {
 void destroy_mtx_lock(unique_lock *lock) {
 #ifdef IS_CC
   return;
-#else
+#elif defined(IS_C_MSTHRD)
   int stat = mtx_unlock(lock);
   mtx_destroy(lock);
+#else
+  pthread_mutex_unlock(lock);
+  pthread_mutex_destroy(lock);
+//  LeaveCriticalSection(lock);
 #endif
 };
 
 /// Destroys C memory resource.
 /// NOOP for C++
 void destroy_cv(condition_variable *cv) {
-#ifdef IS_CC
-  return;
-#else
+#ifdef IS_C_MSTHRD
   cnd_destroy(cv);
+#elif defined(IS_C_PTHRD)
+  pthread_cond_destroy(cv);
 #endif
 };
 
 /// Initialises C memory resource.
 /// NOOP for C++
 void init_ctx(threads_ctx_t *ctx) {
-#ifdef IS_CC
-  return;
-#else
+#ifdef IS_C_MSTHRD
   (void)cnd_init(&ctx->cv);
   atomic_init(&ctx->worker_ready, 0);
   atomic_init(&ctx->wv_done, 0);
+#elif defined(IS_C_PTHRD)
+  pthread_cond_init(&ctx->cv, NULL);
+  //InitializeConditionVariable(&ctx->cv);
+  atomic_init(&ctx->wv_done, false);
+  atomic_init(&ctx->worker_ready, false);
 #endif
 };
 

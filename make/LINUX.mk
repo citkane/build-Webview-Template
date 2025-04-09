@@ -24,90 +24,90 @@
 
 run:
 	@$(call run_message, Linux LLVM ${COMPILED_M})
-	./${BUILD_DIR_COMPILED}/bin/${SYSTEM_PROJECT_NAME}
+	./${BUILD_DIR_COMPILED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
 	@$(call run_message, Linux LLVM ${STATIC_M})
-	./${BUILD_DIR_STATIC}/bin/${SYSTEM_PROJECT_NAME}
+	./${BUILD_DIR_STATIC}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
 	@$(call run_message, Linux LLVM ${SHARED_M})		
-	./${BUILD_DIR_SHARED}/bin/${SYSTEM_PROJECT_NAME}
+	./${BUILD_DIR_SHARED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
 	@$(call run_message, Linux LLVM ${TARGETED_M})	
-	./${BUILD_DIR_TARGETED}/bin/${SYSTEM_PROJECT_NAME}
+	./${BUILD_DIR_TARGETED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
 	@$(call run_message, Linux LLVM ${TARGETED_STATIC_M})	
-	./${BUILD_DIR_TARGETED_STATIC}/bin/${SYSTEM_PROJECT_NAME}
+	./${BUILD_DIR_TARGETED_STATIC}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
 	@$(call run_message, Linux LLVM ${TARGETED_SHARED_M})	
-	./${BUILD_DIR_TARGETED_SHARED}/bin/${SYSTEM_PROJECT_NAME}
+	./${BUILD_DIR_TARGETED_SHARED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
 build:
 	@$(eval USER_MESSAGE := Linux LLVM ${COMPILED_M})
 	@$(call make_message, ${USER_MESSAGE})
-	cmake -G Ninja -B ${BUILD_DIR_COMPILED} -S . ${DEFS} \
+	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_COMPILED} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_FILE} \
 	-D USER_MESSAGE="${USER_MESSAGE}" \
 	-D COMPILED=TRUE
 	@$(call build_message, ${COMPILED_M})
-	cmake --build ${BUILD_DIR_COMPILED}
+	cmake --build ${BUILD_DIR_COMPILED} --config ${BUILD_TYPE}
 build_static:
 	@$(eval USER_MESSAGE := Linux LLVM ${STATIC_M})
 	@$(call make_message, ${USER_MESSAGE})
-	cmake -G Ninja -B ${BUILD_DIR_STATIC} -S . ${DEFS} \
+	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_STATIC} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_FILE} \
 	-D USER_MESSAGE="${USER_MESSAGE}" \
 	-D STATIC=TRUE
 	@$(call build_message, ${STATIC_M})	
-	cmake --build ${BUILD_DIR_STATIC}
+	cmake --build ${BUILD_DIR_STATIC} --config ${BUILD_TYPE}
 build_shared:
 	@$(eval USER_MESSAGE := Linux LLVM ${SHARED_M})
 	@$(call make_message, ${USER_MESSAGE})	
-	cmake -G Ninja -B ${BUILD_DIR_SHARED} -S . ${DEFS} \
+	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_SHARED} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_FILE} \
 	-D USER_MESSAGE="${USER_MESSAGE}" \
 	-D SHARED=TRUE
 	@$(call build_message, ${SHARED_M})	
-	cmake --build ${BUILD_DIR_SHARED}
+	cmake --build ${BUILD_DIR_SHARED} --config ${BUILD_TYPE}
 build_targeted:
 	@$(eval USER_MESSAGE := Linux LLVM ${TARGETED_M})
 	@$(call make_message, ${USER_MESSAGE})
-	cmake -G Ninja -B ${BUILD_DIR_TARGETED} -S . ${DEFS} \
+	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_TARGETED} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_FILE} \
 	-D USER_MESSAGE="${USER_MESSAGE}" \
 	-D TARGETED=TRUE
 	@$(call build_message, ${TARGETED_M})	
-	cmake --build ${BUILD_DIR_TARGETED}
+	cmake --build ${BUILD_DIR_TARGETED} --config ${BUILD_TYPE}
 build_targeted_static:
 	@$(eval USER_MESSAGE := Linux LLVM ${TARGETED_STATIC_M})
 	@$(call make_message, ${USER_MESSAGE})
-	cmake -G Ninja -B ${BUILD_DIR_TARGETED_STATIC} -S . ${DEFS} \
+	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_TARGETED_STATIC} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_C_FILE} \
 	-D USER_MESSAGE="${USER_MESSAGE}" \
 	-D TARGETED=TRUE \
 	-D STATIC=TRUE
 	@$(call build_message, ${TARGETED_STATIC_M})	
-	cmake --build ${BUILD_DIR_TARGETED_STATIC}
+	cmake --build ${BUILD_DIR_TARGETED_STATIC} --config ${BUILD_TYPE}
 build_targeted_shared:
 	@$(eval USER_MESSAGE := Linux LLVM ${TARGETED_SHARED_M})
 	@$(call make_message, ${USER_MESSAGE})
-	cmake -G Ninja -B ${BUILD_DIR_TARGETED_SHARED} -S . ${DEFS} \
+	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_TARGETED_SHARED} -S . ${DEFS} \
 	-D TARGET_FILE=${TARGET_C_FILE} \
 	-D USER_MESSAGE="${USER_MESSAGE}" \
 	-D TARGETED=TRUE \
 	-D SHARED=TRUE
 	@$(call build_message, ${TARGETED_SHARED_M})	
-	cmake --build ${BUILD_DIR_TARGETED_SHARED}
+	cmake --build ${BUILD_DIR_TARGETED_SHARED} --config ${BUILD_TYPE}
 
 
 wv_build:
 	@$(call make_wv_message, Linux LLVM)
-	cmake -G "Ninja Multi-Config" -B ${WV_BUILD_DIR} -S .. ${WV_COMMON_DEFS} \
+	cmake -G ${NINJA_CONFIG} -B ${WV_BUILD_DIR} -S .. ${WV_COMMON_DEFS} \
 	-D CMAKE_TOOLCHAIN_FILE=cmake/toolchains/host-llvm.cmake \
 	-D WEBVIEW_TOOLCHAIN_EXECUTABLE_SUFFIX=${LLVM_V} \
 	-D WEBVIEW_WEBKITGTK_API=${WEBKITGTK_V}

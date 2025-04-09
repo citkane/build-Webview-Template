@@ -24,56 +24,81 @@
 
 run:
 	@$(call run_message, MacOS AppleClang ${COMPILED_M})
-	./${MAC_BUILD_DIR_COMPILED}/bin/${SYSTEM_PROJECT_NAME}
+	./${BUILD_DIR_COMPILED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
 	@$(call run_message, MacOS AppleClang ${STATIC_M})
-	./${MAC_BUILD_DIR_STATIC}/bin/${SYSTEM_PROJECT_NAME}
+	./${BUILD_DIR_STATIC}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
 	@$(call run_message, MacOS AppleClang ${SHARED_M})		
-	./${MAC_BUILD_DIR_SHARED}/bin/${SYSTEM_PROJECT_NAME}
+	./${BUILD_DIR_SHARED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
 	@$(call run_message, MacOS AppleClang ${TARGETED_M})	
-	./${MAC_BUILD_DIR_TARGETED}/bin/${SYSTEM_PROJECT_NAME}
+	./${BUILD_DIR_TARGETED}/${EXE_PATH}
+	@$(call message, ${SUCCESS_M})
+
+	@$(call run_message, MacOS AppleClang ${TARGETED_STATIC_M})	
+	./${BUILD_DIR_TARGETED_STATIC}/${EXE_PATH}
+	@$(call message, ${SUCCESS_M})
+
+	@$(call run_message, MacOS AppleClang ${TARGETED_SHARED_M})	
+	./${BUILD_DIR_TARGETED_SHARED}/${EXE_PATH}
+	@$(call message, ${SUCCESS_M})
 
 mac_build:
 	@$(eval USER_MESSAGE := MacOS AppleClang ${COMPILED_M})
 	@$(call make_message, ${USER_MESSAGE})
-	cmake -G Ninja -B ${MAC_BUILD_DIR_COMPILED} -S . ${DEFS} \
+	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_COMPILED} -S . ${DEFS} \
 	-D USER_MESSAGE="${USER_MESSAGE}" \
 	-D COMPILED=TRUE
 	@$(call build_message, ${COMPILED_M})
-	cmake --build ${MAC_BUILD_DIR_COMPILED}
+	cmake --build ${BUILD_DIR_COMPILED} --config ${BUILD_TYPE}
 mac_build_static:
 	@$(eval USER_MESSAGE := MacOS AppleClang ${STATIC_M})
 	@$(call make_message, ${USER_MESSAGE})
-	cmake -G Ninja -B ${MAC_BUILD_DIR_STATIC} -S . ${DEFS} \
+	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_STATIC} -S . ${DEFS} \
 	-D USER_MESSAGE="${USER_MESSAGE}" \
 	-D STATIC=TRUE
 	@$(call build_message, ${STATIC_M})	
-	cmake --build ${MAC_BUILD_DIR_STATIC}
+	cmake --build ${BUILD_DIR_STATIC} --config ${BUILD_TYPE}
 mac_build_shared:
 	@$(eval USER_MESSAGE := MacOS AppleClang ${SHARED_M})
 	@$(call make_message, ${USER_MESSAGE})	
-	cmake -G Ninja -B ${MAC_BUILD_DIR_SHARED} -S . ${DEFS} \
+	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_SHARED} -S . ${DEFS} \
 	-D USER_MESSAGE="${USER_MESSAGE}" \
 	-D SHARED=TRUE
 	@$(call build_message, ${SHARED_M})	
-	cmake --build ${MAC_BUILD_DIR_SHARED}
+	cmake --build ${BUILD_DIR_SHARED} --config ${BUILD_TYPE}
 mac_build_targeted:
 	@$(eval USER_MESSAGE := MacOS AppleClang ${TARGETED_M})
 	@$(call make_message, ${USER_MESSAGE})
-	cmake -G Ninja -B ${MAC_BUILD_DIR_TARGETED} -S . ${DEFS} \
+	cmake -${NINJA_CONFIG} -B ${BUILD_DIR_TARGETED} -S . ${DEFS} \
 	-D USER_MESSAGE="${USER_MESSAGE}" \
 	-D TARGETED=TRUE
 	@$(call build_message, ${TARGETED_M})	
-	cmake --build ${MAC_BUILD_DIR_TARGETED}
+	cmake --build ${BUILD_DIR_TARGETED} --config ${BUILD_TYPE}
+mac_build_targeted_static:
+	@$(eval USER_MESSAGE := MacOS AppleClang ${TARGETED_STATIC_M})
+	@$(call make_message, ${USER_MESSAGE})
+	cmake -${NINJA_CONFIG} -B ${BUILD_DIR_TARGETED_STATIC} -S . ${DEFS} \
+	-D USER_MESSAGE="${USER_MESSAGE}" \
+	-D TARGETED=TRUE
+	@$(call build_message, ${TARGETED_M})	
+	cmake --build ${BUILD_DIR_TARGETED_STATIC} --config ${BUILD_TYPE}
+mac_build_targeted_shared:
+	@$(eval USER_MESSAGE := MacOS AppleClang ${TARGETED_SHARED_M})
+	@$(call make_message, ${USER_MESSAGE})
+	cmake -${NINJA_CONFIG} -B ${BUILD_DIR_TARGETED_SHARED} -S . ${DEFS} \
+	-D USER_MESSAGE="${USER_MESSAGE}" \
+	-D TARGETED=TRUE
+	@$(call build_message, ${TARGETED_M})	
+	cmake --build ${BUILD_DIR_TARGETED_SHARED} --config ${BUILD_TYPE}
 
 wv_mac_build:
 	@$(call make_wv_message, MacOS AppleClang)
-	cmake -G "Ninja Multi-Config" -B ${WV_BUILD_DIR} -S .. ${WV_COMMON_DEFS}
+	cmake -G ${NINJA_CONFIG} -B ${WV_BUILD_DIR} -S .. ${WV_COMMON_DEFS}
 	@$(call build_wv_message)
 	cmake --build ${WV_BUILD_DIR} --config ${BUILD_TYPE}
 	
