@@ -1,4 +1,4 @@
-# build-Weview-Template
+# build-Webview-Template
 This template provides for test building a [Webview](https://github.com/webview/webview) user application locally on each OS:<br>
 Windows, Linux or MacOS.
 
@@ -28,8 +28,8 @@ cd your/webview
 ```
 
 ```bash
-git clone https://github.com/citkane/build-Weview-Template.git
-cd build-Weview-Template
+git clone https://github.com/citkane/build-Webview-Template.git
+cd build-Webview-Template
 
 make
 make run
