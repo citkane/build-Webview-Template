@@ -108,8 +108,8 @@ build_targeted_shared:
 wv_build:
 	@$(call make_wv_message, ${PLATFORM_M})
 	cmake -G ${NINJA_CONFIG} -B ${WV_BUILD_DIR} -S .. ${WV_COMMON_DEFS} \
-	-D CMAKE_TOOLCHAIN_FILE=cmake/toolchains/host-llvm.cmake \
-	-D WEBVIEW_TOOLCHAIN_EXECUTABLE_SUFFIX=${LLVM_V} \
+	-D CMAKE_TOOLCHAIN_FILE=${HOST_TOOLCHAIN_FILE} \
+	-D WEBVIEW_TOOLCHAIN_EXECUTABLE_SUFFIX=${LLVM_LINUX_V} \
 	-D WEBVIEW_WEBKITGTK_API=${WEBKITGTK_V}
 	@$(call build_wv_message)
 	cmake --build ${WV_BUILD_DIR} --config ${BUILD_TYPE}

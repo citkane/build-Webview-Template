@@ -48,7 +48,9 @@ MSVC_A := x64
 # The Webkit GTK version if on Linux, one of 4.0, 4.1 or 6.0
 WEBKITGTK_V := 6.0
 # The LLVM version for Linux, one of "", -17, -18, etc.
-LLVM_V := -19
+LLVM_LINUX_V := -19
+# The LLVM version for MacOS, one of "", -17, -18, etc.
+LLVM_MAC_V := -20
 # The CPU platform, one of x86_64 or i686
 PLATFORM := x86_64
 

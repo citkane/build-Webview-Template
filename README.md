@@ -1,10 +1,9 @@
 # build-Webview-Template
 This template provides for test building a [Webview](https://github.com/webview/webview) user application locally on each OS:<br>
-Windows, Linux or MacOS.
+Windows, Linux or MacOS<br>
+ie. the scripting is not tailored for cross-compilation usage.
 
-It does not provide for cross-compilation usage.
-
-It's primary purpose is to check Webview's behaviour across a gamit of compiling scenarios, primarily:
+It's primary purpose is to observe Webview's behaviour across the gamut of compilation scenarios, ie.:
 - Directly included and compiled from a user's C++ application
 - Static link libs to a user's C++ application
 - Shared link libs to a user's C++ application
@@ -18,10 +17,10 @@ It's primary purpose is to check Webview's behaviour across a gamit of compiling
 - LLVM (Linux and MacOS)
 
 **Threading Models:**
-- POSIX (mostly)
-- WIN (only for MSVC C)
+- POSIX threads (mostly) except for
+- WIN threads (only for MSVC C)
 
-**Usage:**
+**Usage from each OS individually:**
 ```bash
 cd your/webview
 ```
