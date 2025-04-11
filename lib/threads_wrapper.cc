@@ -37,7 +37,7 @@ void atomic_release(atomic_bool *atomic_flag) {
   atomic_flag->store(true, std::memory_order_release);
 }
 
-bool atomic_check(atomic_bool *atomic_flag) {
+bool atomic_get(atomic_bool *atomic_flag) {
   return atomic_flag->load(std::memory_order_acquire);
 }
 

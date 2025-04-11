@@ -78,7 +78,7 @@ int make_worker_thread(void *arg) {
   condition_notify_one(&ctx->cv);
   condition_wait_for(&ctx->cv, &ctx->child_lock, TIMEOUT, &ctx->wv_done);
 
-  if (!atomic_check(&ctx->wv_done)) {
+  if (!atomic_get(&ctx->wv_done)) {
     webview_terminate(w);
   }
 

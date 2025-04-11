@@ -26,7 +26,7 @@
 #define APP_THREADS_WRAPPER_H
 #pragma clang diagnostic ignored "-Wempty-translation-unit"
 
-#if defined(__cplusplus) // C++ with PThreads
+#if defined(__cplusplus) // C++ build with PThreads
 #define IS_CC
 
 #include <atomic>
@@ -43,46 +43,43 @@ typedef std::thread std_thread;
 typedef std::function<int(void *)> make_worker_thread_t;
 typedef std::function<bool()> atomic_acquire_t;
 
-#elif defined(IS_MSVC) // C MSVC build with WINThreads
-
+#else // C build with WINThreads or PThreads
 #define IS_C
-#define IS_C_WINTHRD
 
 #include <stdatomic.h>
 #include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
+//#include <unistd.h>
+
+typedef int (*make_worker_thread_t)(void *);
+typedef bool atomic_acquire_t;
+
+#endif
+
+#if defined(IS_MSVC) && defined(IS_C) // C MSVC build with WINThreads
+#define IS_C_WINTHRD
+
 #include <threads.h> // Note: <threads.h> on MSVC needs Visual Studio 2022 version 17.8 or greater
 
 typedef mtx_t mutex;
 typedef cnd_t condition_variable;
 typedef thrd_t std_thread;
 typedef mtx_t unique_lock;
-typedef int (*make_worker_thread_t)(void *);
-typedef bool atomic_acquire_t;
 
-#else // C build with PThreads
-
-#define IS_C
+#elif defined(IS_C) // C build with PThreads
 #define IS_C_PTHRD
+
 #ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
 #endif
-
 #include <pthread.h>
-#include <stdatomic.h>
-#include <stdbool.h>
-#include <unistd.h>
 
 typedef pthread_mutex_t mutex;
 typedef pthread_cond_t condition_variable;
 typedef pthread_t std_thread;
 typedef pthread_mutex_t unique_lock;
-typedef int (*make_worker_thread_t)(void *);
-typedef bool atomic_acquire_t;
 
 #endif
 
@@ -102,11 +99,11 @@ void condition_notify_one(condition_variable *cv);
 /// C/C++ helper callback function to aquire a atomic boolean flag
 atomic_acquire_t atomic_acquire(atomic_bool *atomic_flag);
 
-/// C/C++ wrapper to release an atomic hold
-void atomic_release(atomic_bool *atomic_flag);
+/// C/C++ wrapper to get an atomic value
+bool atomic_get(atomic_bool *atomic_flag);
 
 /// C/C++ wrapper to release an atomic hold
-bool atomic_check(atomic_bool *atomic_flag);
+void atomic_release(atomic_bool *atomic_flag);
 
 /// C/C++ Wrapper to lock a unique mutex
 unique_lock lock_mtx(mutex *mtx);

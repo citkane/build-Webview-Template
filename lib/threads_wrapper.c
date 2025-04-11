@@ -39,7 +39,7 @@ void atomic_release(atomic_bool *atomic_flag) {
   atomic_store(atomic_flag, true);
 }
 
-bool atomic_check(atomic_bool *atomic_flag) { return atomic_load(atomic_flag); }
+bool atomic_get(atomic_bool *atomic_flag) { return atomic_load(atomic_flag); }
 
 #if defined(IS_C_PTHRD)
 void condition_notify_one(condition_variable *cv) { pthread_cond_signal(cv); };
@@ -61,7 +61,7 @@ void condition_wait_for(condition_variable *cv, unique_lock *lock, int seconds,
   struct timespec duration;
   (void)clock_gettime(CLOCK_REALTIME, &duration);
   duration.tv_sec += seconds;
-  while (!atomic_check(atomic_flag)) {
+  while (!atomic_get(atomic_flag)) {
     pthread_cond_timedwait(cv, lock, &duration);
     break;
   }
