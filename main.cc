@@ -22,6 +22,11 @@
  * SOFTWARE.
  */
 
+/*******************************************************************************
+* This file (`main.cc`) is tailored for both C++ and C usage. See also `main.c`
+********************************************************************************/
+// NOLINTBEGIN(hicpp-use-auto)
+
 #include "main.hh"
 
 #if defined(IS_MSVC)
@@ -31,49 +36,52 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine,
 #else
 int main() {
 #endif
+
   mutex mtx;
-  unique_lock lock = lock_mtx(&mtx);
   threads_ctx_t ctx;
   init_ctx(&ctx);
+  ctx.main_lock = lock_mtx(&mtx);
 
   webview_t w = webview_create(1, null_char);
   ctx.w = w;
-  std_thread workerThread = create_thread(make_worker_thread, &ctx);
-  condition_wait(&ctx.cv, &lock, &ctx.worker_ready);
+
+  std_thread worker_thread = create_thread(make_worker_thread, &ctx);
+  condition_wait(&ctx.cv, &ctx.main_lock, &ctx.worker_ready);
 
   webview_run(w);
   // The main thread is now blocked until Webview is terminated
-
-  atomic_release(ctx.wv_done);
+  atomic_release(&ctx.wv_done);
   condition_notify_one(&ctx.cv);
-  join_thread(&workerThread);
-  destroy_mtx_lock(&lock);
-  destroy_cv(&ctx.cv);
+
+  webview_destroy(w);
+  app_destroy(&ctx, &worker_thread);
 
   return 0;
 }
 
 int make_worker_thread(void *arg) {
   mutex mtx;
-  unique_lock lock = lock_mtx(&mtx);
   threads_ctx_t *ctx = (threads_ctx_t *)arg;
+  ctx->child_lock = lock_mtx(&mtx);
+
   webview_t w = ctx->w;
 
   const char *unsafe_html = get_html_unsafe();
   webview_set_html(w, unsafe_html);
+  webview_init(w, INIT_SCRIPT);
   free_char_buffer(unsafe_html);
   webview_bind(w, "dummy", dummy_cb, null_char);
   webview_set_title(w, USER_PROJECT_NAME);
   webview_set_size(w, 1200, 1200, WEBVIEW_HINT_NONE);
 
-  atomic_release(ctx->worker_ready);
+  atomic_release(&ctx->worker_ready);
   condition_notify_one(&ctx->cv);
+  condition_wait_for(&ctx->cv, &ctx->child_lock, TIMEOUT, &ctx->wv_done);
 
-  sleep_for(TIMEOUT);
-  webview_terminate(w);
-
-  condition_wait(&ctx->cv, &lock, &ctx->wv_done);
-  destroy_mtx_lock(&lock);
+  if (!atomic_check(&ctx->wv_done)) {
+    webview_terminate(w);
+  }
 
   return 0;
 }
+// NOLINTEND(hicpp-use-auto)

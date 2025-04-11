@@ -25,14 +25,9 @@
 #ifndef APP_MAIN_HH
 #define APP_MAIN_HH
 
-#include "wrappers/threads_wrapper.h"
+#include "lib/main_data.hh"
+#include "lib/threads.hh"
 
-#ifndef USER_PROJECT_NAME
-#define USER_PROJECT_NAME "Unknown"
-#endif
-#ifndef USER_PROJECT_MESSAGE
-#define USER_PROJECT_MESSAGE "Unknown"
-#endif
 #if defined(IS_COMPILED) || defined(IS_TARGETED)
 #include "webview/webview.h"
 #else
@@ -41,60 +36,36 @@
 #include "webview/api.h"
 #endif // defined(IS_COMPILED) || defined(IS_TARGETED)
 
-/// Sets the timeout in seconds before the Webview window automatically closes
-#define TIMEOUT 3
-#define HTML_TEMPLATE                                                          \
-  "<html>"                                                                     \
-  "<p><strong>Running \"%s\" on %s</strong></p>"                               \
-  "<p>This checks that all child worker thread functions are called "          \
-  "successfully from the Webview public API.</p>"                              \
-  "<p>Webview should automatically close after %d seconds if successful.</p>"  \
-  "</html>"
-#define HTML_ARGS                                                              \
-  HTML_TEMPLATE, USER_PROJECT_NAME, USER_PROJECT_MESSAGE, TIMEOUT
-
 /// Implementation function for the child worker thread
 int make_worker_thread(void *arg);
 
 #if defined(IS_CC)
 
-#include <cstdio>
-#include <cstdlib>
-
 static char *null_char = nullptr;
-
+static void char_free(const char *string) { delete[] (char *)string; }
+static char *char_alloc(size_t buffer_size) {
+  return new char[buffer_size + 1];
+}
 #endif // defined(IS_CC)
+
 #if defined(IS_C)
 
 #include <stdio.h>
 #include <stdlib.h>
 
-char *null_char = NULL;
-
-#endif
-
+static char *null_char = NULL;
+static void char_free(const char *string) { free((char *)string); }
 static char *char_alloc(size_t buffer_size) {
-#ifdef IS_CC
-  return new char[buffer_size + 1];
-#else
   char *result = malloc(buffer_size + 1);
   return result;
-#endif
 }
-
-static void char_free(const char *string) {
-#ifdef IS_CC
-  delete[] (char *)string;
-#else
-  free((char *)string);
-#endif
-}
+#endif //  defined(IS_C)
 
 /// Getter for the Webview window HTML string.
 const char *get_html_unsafe() {
-  size_t buffer_size = snprintf(null_char, 0, HTML_ARGS);
+  size_t buffer_size = snprintf(null_char, 0, HTML_TEMPLATE_ARGS);
   char *html = char_alloc(buffer_size);
-  (void)snprintf(html, buffer_size + 1, HTML_ARGS);
+  (void)snprintf(html, buffer_size + 1, HTML_TEMPLATE_ARGS);
 
   return html;
 }
@@ -104,5 +75,12 @@ void free_char_buffer(const char *char_buffer) { char_free(char_buffer); }
 
 /// A dummy Webview callback function
 void dummy_cb(const char *name, const char *id, void *arg) {};
+
+void app_destroy(threads_ctx_t *ctx, std_thread *thread) {
+  destroy_cv(&ctx->cv);
+  join_thread(thread);
+  destroy_mtx_lock(&ctx->main_lock);
+  destroy_mtx_lock(&ctx->child_lock);
+}
 
 #endif // APP_MAIN_HH
