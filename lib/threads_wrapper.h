@@ -46,6 +46,13 @@ typedef std::function<bool()> atomic_acquire_t;
 #else // C build with WINThreads or PThreads
 #define IS_C
 
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#endif
+
 #include <stdatomic.h>
 #include <stdbool.h>
 //#include <unistd.h>
@@ -59,6 +66,7 @@ typedef bool atomic_acquire_t;
 #define IS_C_WINTHRD
 
 #include <threads.h> // Note: <threads.h> on MSVC needs Visual Studio 2022 version 17.8 or greater
+#include <time.h>
 
 typedef mtx_t mutex;
 typedef cnd_t condition_variable;
@@ -68,12 +76,6 @@ typedef mtx_t unique_lock;
 #elif defined(IS_C) // C build with PThreads
 #define IS_C_PTHRD
 
-#ifdef _WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
-#endif
 #include <pthread.h>
 
 typedef pthread_mutex_t mutex;

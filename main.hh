@@ -36,10 +36,10 @@
 #include "webview/api.h"
 #endif // defined(IS_COMPILED) || defined(IS_TARGETED)
 
-/// Implementation function for the child worker thread
-int make_worker_thread(void *arg);
-
 #if defined(IS_CC)
+
+#include <cstdarg>
+#include <cstdio>
 
 static char *null_char = nullptr;
 static void char_free(const char *string) { delete[] (char *)string; }
@@ -60,6 +60,9 @@ static char *char_alloc(size_t buffer_size) {
   return result;
 }
 #endif //  defined(IS_C)
+
+/// Implementation function for the child worker thread
+int make_worker_thread(void *arg);
 
 /// Getter for the Webview window HTML string.
 const char *get_html_unsafe() {

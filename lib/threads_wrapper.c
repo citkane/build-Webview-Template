@@ -29,7 +29,6 @@
 // NOLINTBEGIN(readability-non-const-parameter)
 
 #include "threads_wrapper.h"
-#include <threads.h>
 
 atomic_acquire_t atomic_acquire(atomic_bool *atomic_flag) {
   return atomic_load(atomic_flag);
@@ -113,7 +112,7 @@ void condition_wait(condition_variable *cv, unique_lock *lock,
 void condition_wait_for(condition_variable *cv, unique_lock *lock, int seconds,
                         atomic_bool *atomic_flag) {
   struct timespec duration;
-  (void)clock_gettime(CLOCK_REALTIME, &duration);
+  (void)timespec_get(&duration, TIME_UTC);
   duration.tv_sec += seconds;
 
   while (!atomic_acquire(atomic_flag)) {
