@@ -26,7 +26,7 @@ wv_build:
 	@$(call make_wv_message, ${PLATFORM_M})
 	cmake -G ${NINJA_CONFIG} -B ${WV_BUILD_DIR} -S .. ${WV_COMMON_DEFS} \
 	-D CMAKE_TOOLCHAIN_FILE=${HOST_TOOLCHAIN_FILE} \
-	-D WEBVIEW_TOOLCHAIN_EXECUTABLE_SUFFIX=${LLVM_MAC_V} \
+	-D WEBVIEW_TOOLCHAIN_EXECUTABLE_SUFFIX=${LLVM_MAC_V}
 	@$(call build_wv_message)
 	cmake --build ${WV_BUILD_DIR} --config ${BUILD_TYPE}
 	
