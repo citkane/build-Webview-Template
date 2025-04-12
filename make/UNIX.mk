@@ -22,6 +22,9 @@
 # SOFTWARE.
 #
 
+run_all: run_compiled run_static run_shared run_targeted run_targeted_static run_targeted_shared
+build_all: build_compiled build_static build_shared build_targeted build_targeted_static build_targeted_shared
+
 run_compiled:
 	@$(call pre_build, build_compiled, ${BUILD_DIR_COMPILED}, ${RUN_BUILD_M})
 	@$(call run_message, ${PLATFORM_M} ${COMPILED_M})
@@ -55,8 +58,7 @@ run_targeted_shared:
 
 check_wv_build:
 	@$(call pre_build, wv_build, ${WV_BUILD_DIR}, ${WV_BUILD_M})
-	
-build: build_compiled build_static build_shared build_targeted build_targeted_static build_targeted_shared
+
 build_compiled:
 	@$(eval USER_MESSAGE := ${PLATFORM_M} ${COMPILED_M})
 	@$(call make_message, ${USER_MESSAGE})

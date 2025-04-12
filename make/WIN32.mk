@@ -25,6 +25,9 @@
 run_mingw: run_compiled run_static run_shared run_targeted run_targeted_static run_targeted_shared
 run_msvc: run_msvc_compiled run_msvc_static run_msvc_shared run_msvc_targeted run_msvc_targeted_static run_msvc_targeted_shared
 
+build_mingw: build_compiled build_static build_shared build_targeted build_targeted_static build_targeted_shared
+build_msvc: msvc_build_compiled msvc_build_static msvc_build_shared msvc_build_targeted msvc_build_targeted_static msvc_build_targeted_shared
+
 run_compiled:
 	@$(call pre_build, build_compiled, ${BUILD_DIR_COMPILED}, ${RUN_BUILD_M})
 	@$(call run_message, ${PLATFORM_M} ${COMPILED_M})
@@ -86,10 +89,6 @@ run_msvc_targeted_shared:
 	@$(call run_message, ${PLATFORM_MSVC_M} ${TARGETED_SHARED_M})
 	./${MSVC_BUILD_DIR_TARGETED_SHARED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
-
-build: build_mingw build_msvc
-build_mingw: build_compiled build_static build_shared build_targeted build_targeted_static build_targeted_shared
-build_msvc: msvc_build_compiled msvc_build_static msvc_build_shared msvc_build_targeted msvc_build_targeted_static msvc_build_targeted_shared
 
 check_wv_build:
 	@$(call pre_build, wv_build, ${WV_BUILD_DIR}, ${MS_WV_BUILD_M})
