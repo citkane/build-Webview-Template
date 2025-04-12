@@ -28,25 +28,33 @@
 // NOLINTBEGIN(hicpp-use-auto)
 
 #include "main.hh"
+#include "lib/threads_wrapper.h"
 
-#if defined(IS_MSVC)
+#if defined(_WIN32)
 #include <windows.h>
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine,
                    int nCmdShow) {
+
+  //************************** Uncomment to enable debugging to Windows console
+  //(void)AttachConsole(ATTACH_PARENT_PROCESS);
+  //(void)freopen("CONOUT$", "w", stdout);
+  //(void)freopen("CONOUT$", "w", stderr);
+  //***************************************************************************
+
 #else
 int main() {
 #endif
 
   mutex mtx;
   threads_ctx_t ctx;
-  init_ctx(&ctx);
-  ctx.main_lock = lock_mtx(&mtx);
+  unique_lock lock = mtx_lock_unique(&mtx);
+  ctx_init(&ctx);
 
   webview_t w = webview_create(1, null_char);
   ctx.w = w;
 
-  std_thread worker_thread = create_thread(make_worker_thread, &ctx);
-  condition_wait(&ctx.cv, &ctx.main_lock, &ctx.worker_ready);
+  std_thread worker_thread = thread_create(make_worker_thread, &ctx);
+  condition_wait(&ctx.cv, &lock, &ctx.worker_ready);
 
   webview_run(w);
   // The main thread is now blocked until Webview is terminated
@@ -55,6 +63,7 @@ int main() {
 
   webview_destroy(w);
   app_destroy(&ctx, &worker_thread);
+  mtx_unlock_destroy_unique(&lock);
 
   return 0;
 }
@@ -62,25 +71,26 @@ int main() {
 int make_worker_thread(void *arg) {
   mutex mtx;
   threads_ctx_t *ctx = (threads_ctx_t *)arg;
-  ctx->child_lock = lock_mtx(&mtx);
-
+  unique_lock lock = mtx_lock_unique(&mtx);
   webview_t w = ctx->w;
 
   const char *unsafe_html = get_html_unsafe();
   webview_set_html(w, unsafe_html);
-  webview_init(w, INIT_SCRIPT);
   free_char_buffer(unsafe_html);
+
   webview_bind(w, "dummy", dummy_cb, null_char);
-  webview_set_title(w, USER_PROJECT_NAME);
   webview_set_size(w, 1200, 1200, WEBVIEW_HINT_NONE);
+  webview_set_title(w, USER_PROJECT_NAME);
+  webview_init(w, INIT_SCRIPT);
 
   atomic_release(&ctx->worker_ready);
   condition_notify_one(&ctx->cv);
-  condition_wait_for(&ctx->cv, &ctx->child_lock, TIMEOUT, &ctx->wv_done);
 
+  condition_wait_for(&ctx->cv, &lock, TIMEOUT, &ctx->wv_done);
   if (!atomic_get(&ctx->wv_done)) {
     webview_terminate(w);
   }
+  mtx_unlock_destroy_unique(&lock);
 
   return 0;
 }

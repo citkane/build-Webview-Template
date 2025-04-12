@@ -30,22 +30,30 @@ RESET := \033[0m
 ifeq ($(OS),Windows_NT)
 	TO_LOWER = $(shell powershell -Command "& {Write-Output '$(strip ${1})'.ToLower()}")
 	ifeq (${SHELL_TEST},"test")
+		DIR_EXISTS = cmd /c if exist "${1}" (exit 0) else (exit 1)
 		RM_DIR = if exist "$(1)" rd /s /q "$(1)"
 		MESSAGE_GREEN = echo. && powershell -Command "Write-Host '$(strip ${1})' -ForegroundColor Green"
 		MESSAGE_GREEN = echo. && powershell -Command "Write-Host '$(strip ${1})' -ForegroundColor Green"
 		MESSAGE = powershell -Command "Write-Host '$(strip ${1})'"
 	else
+		DIR_EXISTS = test -d "${1}"
 		RM_DIR = rm -rf $(1)
 		MESSAGE_GREEN = printf "\n${GREEN}${1}${RESET}\n"
 		MESSAGE = printf "${1}\n"
 	endif
 else
 	UNAME := $(shell uname -s)
+	TO_LOWER = $(shell echo "$(strip ${1})" | tr '[:upper:]' '[:lower:]')
+	DIR_EXISTS = test -d "${1}"
 	RM_DIR = rm -rf $(1)
 	MESSAGE_GREEN = printf "\n${GREEN}${1}${RESET}\n"
 	MESSAGE = printf "${1}\n"
-	TO_LOWER = $(shell echo "$(strip ${1})" | tr '[:upper:]' '[:lower:]')
 endif
+
+define pre_build
+	@$(call DIR_EXISTS,$(strip ${2})) || $(call message, ${3})
+	@$(call DIR_EXISTS,$(strip ${2})) || $(MAKE) $(strip ${1})
+endef
 
 define to_lower_snake
 $(subst $(space),_,$(call TO_LOWER,${1}))

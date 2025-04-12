@@ -22,56 +22,82 @@
 # SOFTWARE.
 #
 
-run:
+run: run_mingw run_msvc
+run_mingw: run_compiled run_static run_shared run_targeted run_targeted_static run_targeted_shared
+run_msvc: run_msvc_compiled run_msvc_static run_msvc_shared run_msvc_targeted run_msvc_targeted_static run_msvc_targeted_shared
+
+run_compiled:
+	@$(call pre_build, build_compiled, ${BUILD_DIR_COMPILED}, ${RUN_BUILD_M})
 	@$(call run_message, ${PLATFORM_M} ${COMPILED_M})
 	./${BUILD_DIR_COMPILED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
-
+run_static:
+	@$(call pre_build, build_static, ${BUILD_DIR_STATIC}, ${RUN_BUILD_M})
 	@$(call run_message, ${PLATFORM_M} ${STATIC_M})
 	./${BUILD_DIR_STATIC}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
-
+run_shared:
+	@$(call pre_build, build_shared, ${BUILD_DIR_SHARED}, ${RUN_BUILD_M})
 	@$(call run_message, ${PLATFORM_M} ${SHARED_M})
 	./${BUILD_DIR_SHARED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
-
+run_targeted:
+	@$(call pre_build, build_targeted, ${BUILD_DIR_TARGETED}, ${RUN_BUILD_M})
 	@$(call run_message, ${PLATFORM_M} ${TARGETED_M})
 	./${BUILD_DIR_TARGETED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
-
+run_targeted_static:
+	@$(call pre_build, build_targeted_static, ${BUILD_DIR_TARGETED_STATIC}, ${RUN_BUILD_M})
 	$(call run_message, ${PLATFORM_M} ${TARGETED_STATIC_M})
 	./${BUILD_DIR_TARGETED_STATIC}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
-
+run_targeted_shared:
+	@$(call pre_build, build_targeted_shared, ${BUILD_DIR_TARGETED_SHARED}, ${RUN_BUILD_M})
 	$(call run_message, ${PLATFORM_M} ${TARGETED_SHARED_M})
 	./${BUILD_DIR_TARGETED_SHARED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
+run_msvc_compiled:
+	@$(call pre_build, msvc_build_compiled, ${MSVC_BUILD_DIR_COMPILED}, ${RUN_BUILD_M})
 	@$(call run_message, ${PLATFORM_MSVC_M} ${COMPILED_M})
 	./${MSVC_BUILD_DIR_COMPILED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
-
+run_msvc_static:
+	@$(call pre_build, msvc_build_static, ${MSVC_BUILD_DIR_STATIC}, ${RUN_BUILD_M})
 	@$(call run_message, ${PLATFORM_MSVC_M} ${STATIC_M})
 	./${MSVC_BUILD_DIR_STATIC}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
-
+run_msvc_shared:
+	@$(call pre_build, msvc_build_shared, ${MSVC_BUILD_DIR_SHARED}, ${RUN_BUILD_M})
 	@$(call run_message, ${PLATFORM_MSVC_M} ${SHARED_M})
 	./${MSVC_BUILD_DIR_SHARED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
-
+run_msvc_targeted:
+	@$(call pre_build, msvc_build_targeted, ${MSVC_BUILD_DIR_TARGETED}, ${RUN_BUILD_M})
 	@$(call run_message, ${PLATFORM_MSVC_M} ${TARGETED_M})
 	./${MSVC_BUILD_DIR_TARGETED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
-
+run_msvc_targeted_static:
+	@$(call pre_build, msvc_build_targeted_static, ${MSVC_BUILD_DIR_TARGETED_STATIC}, ${RUN_BUILD_M})
 	@$(call run_message, ${PLATFORM_MSVC_M} ${TARGETED_STATIC_M})
 	./${MSVC_BUILD_DIR_TARGETED_STATIC}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
-
+run_msvc_targeted_shared:
+	@$(call pre_build, msvc_build_targeted_shared, ${MSVC_BUILD_DIR_TARGETED_SHARED}, ${RUN_BUILD_M})
 	@$(call run_message, ${PLATFORM_MSVC_M} ${TARGETED_SHARED_M})
 	./${MSVC_BUILD_DIR_TARGETED_SHARED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 
-build:
+build: build_mingw build_msvc
+build_mingw: build_compiled build_static build_shared build_targeted build_targeted_static build_targeted_shared
+build_msvc: msvc_build_compiled msvc_build_static msvc_build_shared msvc_build_targeted msvc_build_targeted_static msvc_build_targeted_shared
+
+check_wv_build:
+	@$(call pre_build, wv_build, ${WV_BUILD_DIR}, ${MS_WV_BUILD_M})
+check_wv_msvc_build:
+	@$(call pre_build, wv_msvc_build, ${MSVC_WV_BUILD_DIR}, ${MS_WV_BUILD_M})
+
+build_compiled: check_wv_build
 	@$(eval USER_MESSAGE := ${PLATFORM_M} ${COMPILED_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_COMPILED} -S . ${DEFS} \
@@ -82,7 +108,7 @@ build:
 	-D COMPILED=TRUE
 	@$(call build_message, ${COMPILED_M})
 	cmake --build ${BUILD_DIR_COMPILED} --config ${BUILD_TYPE}
-build_static:
+build_static: check_wv_build
 	@$(eval USER_MESSAGE := ${PLATFORM_M} ${STATIC_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_STATIC} -S . ${DEFS} \
@@ -93,7 +119,7 @@ build_static:
 	-D STATIC=TRUE
 	@$(call build_message, ${STATIC_M})
 	cmake --build ${BUILD_DIR_STATIC} --config ${BUILD_TYPE}
-build_shared:
+build_shared: check_wv_build
 	@$(eval USER_MESSAGE := ${PLATFORM_M} ${SHARED_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${NINJA_CONFIG} -B ${BUILD_DIR_SHARED} -S . ${DEFS} \
@@ -140,7 +166,7 @@ build_targeted_shared:
 	@$(call build_message, ${TARGETED_SHARED_M})	
 	cmake --build ${BUILD_DIR_TARGETED_SHARED} --config ${BUILD_TYPE}
 
-msvc_build:
+msvc_build_compiled: check_wv_msvc_build
 	@$(eval USER_MESSAGE := ${PLATFORM_MSVC_M} ${COMPILED_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${MSVC_V} -A ${MSVC_A} -B ${MSVC_BUILD_DIR_COMPILED} -S . ${DEFS} \
@@ -151,7 +177,7 @@ msvc_build:
 	-D COMPILED=TRUE
 	@$(call build_message, ${COMPILED_M})	
 	cmake --build ${MSVC_BUILD_DIR_COMPILED} --config ${BUILD_TYPE}
-msvc_build_static:
+msvc_build_static: check_wv_msvc_build
 	@$(eval USER_MESSAGE := ${PLATFORM_MSVC_M} ${STATIC_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${MSVC_V} -A ${MSVC_A} -B ${MSVC_BUILD_DIR_STATIC} -S . ${DEFS} \
@@ -162,7 +188,7 @@ msvc_build_static:
 	-D STATIC=TRUE
 	@$(call build_message, ${STATIC_M})	
 	cmake --build ${MSVC_BUILD_DIR_STATIC} --config ${BUILD_TYPE}
-msvc_build_shared:
+msvc_build_shared: check_wv_msvc_build
 	@$(eval USER_MESSAGE := ${PLATFORM_MSVC_M} ${SHARED_M})
 	@$(call make_message, ${USER_MESSAGE})
 	cmake -G ${MSVC_V} -A ${MSVC_A} -B ${MSVC_BUILD_DIR_SHARED} -S . ${DEFS} \

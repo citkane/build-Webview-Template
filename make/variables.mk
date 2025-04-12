@@ -35,6 +35,9 @@ TARGETED_M := with C++ TARGETED link webview::core
 TARGETED_STATIC_M := with C TARGETED link webview::core_static
 TARGETED_SHARED_M := with C TARGETED link webview::core_shared
 SUCCESS_M := Success!
+WV_BUILD_M := Webview firstly needs to be built in order to link libraries...
+MS_WV_BUILD_M := Webview firstly needs to be built in order to download MsWebview2...
+RUN_BUILD_M := The app needs to be comiled before running...
 
 COMMON_DEFS := -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
 -DWV_ROOT_DIR=${WV_ROOT_DIR} \

@@ -11,7 +11,7 @@ if(NOT DEFINED WV_ROOT_DIR)
 endif()
 
 if(NOT DEFINED WV_BUILD_DIR)
-    message(FATAL_ERROR "WV_BUILD_DIR must be defined. Pass -DWV_BUILD_DIR=build-dir-name to the compiler.")
+    message(FATAL_ERROR "WV_BUILD_DIR must be defined. Pass -DWV_BUILD_DIR=path/to/webview/build to the compiler.")
 endif()
 
 if(NOT DEFINED CMAKE_BUILD_TYPE)

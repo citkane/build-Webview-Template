@@ -80,10 +80,8 @@ void free_char_buffer(const char *char_buffer) { char_free(char_buffer); }
 void dummy_cb(const char *name, const char *id, void *arg) {};
 
 void app_destroy(threads_ctx_t *ctx, std_thread *thread) {
-  destroy_cv(&ctx->cv);
-  join_thread(thread);
-  destroy_mtx_lock(&ctx->main_lock);
-  destroy_mtx_lock(&ctx->child_lock);
+  condition_destroy(&ctx->cv);
+  thread_join(thread);
 }
 
 #endif // APP_MAIN_HH

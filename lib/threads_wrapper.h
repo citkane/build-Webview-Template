@@ -24,7 +24,9 @@
 
 #ifndef APP_THREADS_WRAPPER_H
 #define APP_THREADS_WRAPPER_H
+#ifdef clang
 #pragma clang diagnostic ignored "-Wempty-translation-unit"
+#endif
 
 #if defined(__cplusplus) // C++ build with PThreads
 #define IS_CC
@@ -55,7 +57,6 @@ typedef std::function<bool()> atomic_acquire_t;
 
 #include <stdatomic.h>
 #include <stdbool.h>
-//#include <unistd.h>
 
 typedef int (*make_worker_thread_t)(void *);
 typedef bool atomic_acquire_t;
@@ -87,16 +88,11 @@ typedef pthread_mutex_t unique_lock;
 
 /// A context type for the child worker thread
 typedef struct {
-  unique_lock main_lock;
-  unique_lock child_lock;
   condition_variable cv;
   atomic_bool wv_done;
   atomic_bool worker_ready;
   void *w;
 } threads_ctx_t;
-
-/// C/C++ Wrapper to notify a conditional variable on one thread
-void condition_notify_one(condition_variable *cv);
 
 /// C/C++ helper callback function to aquire a atomic boolean flag
 atomic_acquire_t atomic_acquire(atomic_bool *atomic_flag);
@@ -108,32 +104,34 @@ bool atomic_get(atomic_bool *atomic_flag);
 void atomic_release(atomic_bool *atomic_flag);
 
 /// C/C++ Wrapper to lock a unique mutex
-unique_lock lock_mtx(mutex *mtx);
+unique_lock mtx_lock_unique(mutex *mtx);
+
+/// C wrapper to unlock a unique mutex.
+/// NOOP for C++
+void mtx_unlock_destroy_unique(unique_lock *lock);
 
 /// C/C++ Wrapper to conditionally wait for an atomic boolean flag
-void condition_wait(condition_variable *cv, unique_lock *lock,
+void condition_wait(condition_variable *condition, unique_lock *lock,
                     atomic_bool *atomic_flag);
 
 /// C/C++ Wrapper to wait for a time period in seconds
-void condition_wait_for(condition_variable *cv, unique_lock *lock, int seconds,
-                        atomic_bool *atomic_flag);
+void condition_wait_for(condition_variable *condition, unique_lock *lock,
+                        int seconds, atomic_bool *atomic_flag);
+
+/// C/C++ Wrapper to notify a conditional variable on one thread
+void condition_notify_one(condition_variable *condition);
+
+/// Destroys C condition memory resource.
+/// NOOP for C++
+void condition_destroy(condition_variable *condition);
 
 /// C/C++ wrapper to create a thread
-std_thread create_thread(make_worker_thread_t fn, threads_ctx_t *ctx);
+std_thread thread_create(make_worker_thread_t fn, threads_ctx_t *ctx);
 
 /// C/C++ wrapper to join a thread
-void join_thread(std_thread *thread);
+void thread_join(std_thread *thread);
 
-/// Destroys C memory resource.
-/// NOOP for C++
-void destroy_mtx_lock(unique_lock *lock);
-
-/// Destroys C memory resource.
-/// NOOP for C++
-void destroy_cv(condition_variable *cv);
-
-/// Initialises C memory resources.
-/// NOOP for C++
-void init_ctx(threads_ctx_t *ctx);
+/// Initialises C/C++ memory resources.
+void ctx_init(threads_ctx_t *ctx);
 
 #endif //APP_THREADS_WRAPPER_H
