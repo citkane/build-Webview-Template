@@ -63,31 +63,27 @@ ROOT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 include make/functions.mk
 include make/variables.mk
 
+ifeq ($(OS),Windows_NT)
+include make/WIN32.mk
+
+else
+include make/UNIX.mk
+
+endif
+
 .PHONY: clean run \
 wv_build build build_static build_shared build_targeted \
 wv_msvc_build mscv_build msvc_build_static msvc_build_shared msvc_build_targeted
 
 ifeq ($(OS),Windows_NT)
 all: wv_build build_mingw wv_msvc_build build_msvc
+run: run_mingw run_msvc
 
 else
-all: wv_build \
-build build_static build_shared build_targeted build_targeted_static build_targeted_shared
+all: wv_build build
+run: run_compiled run_static run_shared run_targeted run_targeted_static run_targeted_shared
 
 endif
 
 clean:
 	$(foreach dir, ${BUILD_DIRS}, $(call rm_dir, ${dir}))
-
-ifeq ($(OS),Windows_NT)
-include make/WIN32.mk
-
-else ifeq ($(UNAME),Linux)
-include make/LINUX.mk
-
-else ifeq ($(UNAME),Darwin)
-include make/APPLE.mk
-
-endif
-
-	

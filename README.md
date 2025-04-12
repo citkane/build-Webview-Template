@@ -40,5 +40,6 @@ Fork this repo and modify `main.cc` or edit the `makefile` user options to your 
 Depends on PR's:
 - [#1293](https://github.com/webview/webview/pull/1293)
 - [#1292](https://github.com/webview/webview/pull/1292)
+- [#1300](https://github.com/webview/webview/pull/1300)
 
 

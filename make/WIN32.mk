@@ -22,7 +22,6 @@
 # SOFTWARE.
 #
 
-run: run_mingw run_msvc
 run_mingw: run_compiled run_static run_shared run_targeted run_targeted_static run_targeted_shared
 run_msvc: run_msvc_compiled run_msvc_static run_msvc_shared run_msvc_targeted run_msvc_targeted_static run_msvc_targeted_shared
 
@@ -48,12 +47,12 @@ run_targeted:
 	@$(call message, ${SUCCESS_M})
 run_targeted_static:
 	@$(call pre_build, build_targeted_static, ${BUILD_DIR_TARGETED_STATIC}, ${RUN_BUILD_M})
-	$(call run_message, ${PLATFORM_M} ${TARGETED_STATIC_M})
+	@$(call run_message, ${PLATFORM_M} ${TARGETED_STATIC_M})
 	./${BUILD_DIR_TARGETED_STATIC}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 run_targeted_shared:
 	@$(call pre_build, build_targeted_shared, ${BUILD_DIR_TARGETED_SHARED}, ${RUN_BUILD_M})
-	$(call run_message, ${PLATFORM_M} ${TARGETED_SHARED_M})
+	@$(call run_message, ${PLATFORM_M} ${TARGETED_SHARED_M})
 	./${BUILD_DIR_TARGETED_SHARED}/${EXE_PATH}
 	@$(call message, ${SUCCESS_M})
 

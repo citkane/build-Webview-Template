@@ -51,8 +51,8 @@ else
 endif
 
 define pre_build
-	@$(call DIR_EXISTS,$(strip ${2})) || $(call message, ${3})
-	@$(call DIR_EXISTS,$(strip ${2})) || $(MAKE) $(strip ${1})
+	$(call DIR_EXISTS,$(strip ${2})) || $(call message, ${3})
+	$(call DIR_EXISTS,$(strip ${2})) || $(MAKE) $(strip ${1})
 endef
 
 define to_lower_snake
@@ -65,25 +65,25 @@ define rm_dir
 endef
 
 define message
-	@$(call MESSAGE,$(strip ${1}))
+	$(call MESSAGE,$(strip ${1}))
 endef
 
 define make_message
-	@$(call MESSAGE_GREEN,Making \"${USER_PROJECT_NAME}\" on $(strip ${1}))
+	$(call MESSAGE_GREEN,Making \"${USER_PROJECT_NAME}\" on $(strip ${1}))
 endef
 
 define run_message
-	@$(call MESSAGE_GREEN,Running \"${USER_PROJECT_NAME}\" on $(strip ${1}))
+	$(call MESSAGE_GREEN,Running \"${USER_PROJECT_NAME}\" on $(strip ${1}))
 endef
 
 define build_message
-	@$(call MESSAGE_GREEN,Building $(strip ${1}))
+	$(call MESSAGE_GREEN,Building $(strip ${1}))
 endef
 
 define build_wv_message
-	@$(call MESSAGE_GREEN,Building \"Webview\")
+	$(call MESSAGE_GREEN,Building \"Webview\")
 endef
 
 define make_wv_message
-	@$(call MESSAGE_GREEN,Making \"Webview\" on $(strip ${1}))
+	$(call MESSAGE_GREEN,Making \"Webview\" on $(strip ${1}))
 endef
